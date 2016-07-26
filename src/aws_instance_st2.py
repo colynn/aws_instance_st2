@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 
 import time
 import AwsConfig
@@ -8,6 +10,7 @@ CONFIGFILE=".aws_instance_st2.conf"
 
 # defined time_tag, '22' means stopped,  '8' means running.
 time_tag = time.strftime("%H")
+
 
 def main():
     cnf = AwsConfig(CONFIGFILE)
@@ -26,7 +29,9 @@ def main():
         else:
             ec2_instance.stop(instance_list)
     else:
-        print "these time no instances need start or stop."
+        print "this time no instances need start or stop."
 
+if __name__ == "__main__":
+    main()
 
 

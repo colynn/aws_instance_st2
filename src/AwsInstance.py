@@ -25,13 +25,13 @@ class AwsInstance(object):
             instance_info = reservation[Instances][0]
 
             for tag in instance_info['Tags']:
-                # Note: 如果 主机tag不唯一会出现多次的 instances 字典条目.
+                # Note: If the tag of hosts is not unique, the item of instances dict will generate multiple times.
                 if tag['Key'] == 'Name':
                     instances[instance_info['InstanceId']] = {'tag': tag['Value'], 'status': instance_info['State']['Name']}
                 continue
         return instances
 
-    # 为类外处理函数,但为方便参数处理,整合至类中.
+    # Just for convenience, integrated into class.
     def instance_manage_list(self):
         """
         {'i-123456':{"tag": "srv-nc-test1", "status": "stopped"}}
