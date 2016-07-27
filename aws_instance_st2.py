@@ -3,12 +3,13 @@
 
 import sys
 import boto3
-# from lib import log
+from lib import log
 
 region = 'cn-north-1'
 ec2 = boto3.client('ec2', region)
 tag_list = "ansible-test1, tina-bj-zabbix3.0-test"
-
+# log path
+LOG_FILE = ".aws_instance_st2.log"
 
 def instances_get():
     """
@@ -51,7 +52,7 @@ def instance_manage_list(instance_dict, action):
             if instance['status'] == action:
                 instance_list.append(iid)
     if len(instance_list) == 0:
-            print "Didn't find the host instance matching tag."
+            log.get_logger().log("[Info] Didn't find the host instance matching tag.")
             sys.exit(1)
     return instance_list
 
@@ -62,8 +63,6 @@ def start(instance_list):
     return status_code
     # waiter = ec2.get_waiter('instance_running')
     # waiter.wait(InstanceIds=instance_list)
-    # log.get_logger().log("hello, world")
-
 
 def stop(instance_list):
     respon_data = ec2.stop_instances(InstanceIds=instance_list)
@@ -71,14 +70,16 @@ def stop(instance_list):
     return status_code
 
 
-def log(code, action, instance_list, instance_dict):
+def log_print(code, action, instance_list, instance_dict):
     instance_tags = []
     for i in instance_list:
         instance_tags.append(instance_dict[i]['tag'])
     if code == 200:
-        print "[Info] succeed " + action + " " + ','.join(instance_tags)
+        # print "[Info] succeed " + action + " " + ','.join(instance_tags)
+        log.get_logger().log("[Info] succeed " + action + " " + ','.join(instance_tags))
     else:
-        print "[Error] failed " + action + " " + ','.join(instance_tags)
+        # print "[Error] failed " + action + " " + ','.join(instance_tags)
+        log.get_logger().log("[Error] failed " + action + " " + ','.join(instance_tags))
 
 
 def main():
@@ -86,6 +87,7 @@ def main():
         print "Usage: python " + sys.argv[0] +  " {start|stop}"
         sys.exit(0)
     action = sys.argv[1]
+    log.get_logger().set_log_file(LOG_FILE)
     instance_dict = instances_get()
     # 
     if action == 'start':
@@ -97,7 +99,7 @@ def main():
     else:
         print "[Error] argument invalid, An bu zhi dao, you want to do what, lol."
         sys.exit(1)
-    log(code, action, instance_list, instance_dict)
+    log_print(code, action, instance_list, instance_dict)
 
 if __name__ == "__main__":
     main()

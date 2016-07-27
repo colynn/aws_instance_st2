@@ -5,12 +5,12 @@ from logging.handlers import MemoryHandler
 class Logger:
     def __init__(self):
         self.logger = logging.getLogger()
-        self.buffer = MemoryHandler(1000)
+        self.buffer = MemoryHandler(500)
         self.handler = None
         self.formatter = logging.Formatter('[%(asctime)s]: %(message)s')
         self.buffer.setFormatter(self.formatter)
         self.logger.addHandler(self.buffer)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
 
     def log(self, msg):
         try:
