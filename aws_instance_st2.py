@@ -52,7 +52,7 @@ def instance_manage_list(instance_dict, action):
             if instance['status'] == action:
                 instance_list.append(iid)
     if len(instance_list) == 0:
-            log.get_logger().log("[Info] Didn't find the host instance matching tag.")
+            log.get_logger().log("[Info] didn't find the host instance matching tag.")
             sys.exit(1)
     return instance_list
 
@@ -69,6 +69,10 @@ def stop(instance_list):
     status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
     return status_code
 
+def terminate(instance_list)
+    respon_data = ec2.terminate_instances(InstanceIds=instance_list)
+    status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
+    return status_code
 
 def log_print(code, action, instance_list, instance_dict):
     instance_tags = []
