@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 #
 
-import  boto3
+import boto3
 
-ec2 = boto3.client('ec2', self.region)
+region = 'cn-north-1'
+ec2 = boto3.client('ec2', region)
+tag_list = "web-test, nc-test"
 
 
 def instances_get():
@@ -24,7 +26,14 @@ def instances_get():
     return instances
 
 
-def instance_manage_list(self):
+def match_tag(instance_tag_name):
+    for t in tag_list.split(','):
+        if instance_tag_name.find(t.strip()) != -1:
+            return True
+    return False
+
+
+def instance_manage_list(action):
     """
     {'i-123456':{"tag": "srv-nc-test1", "status": "stopped"}}
 
@@ -34,21 +43,19 @@ def instance_manage_list(self):
 
     instance_list = []
     for iid in instance_dict:
-        if self.time_tag == self.start_time:
-            if [instance_dict[iid]['status'] == 'stopped']:
-                instance_list.append(iid)
-        elif self.time_tag == self.stop_time:
-            if [instance_dict[iid]['status'] == 'stopped']:
+        instance = instance_dict[iid]
+        if match_tag(instance['tag']):
+            if instance['status'] == action:
                 instance_list.append(iid)
         else:
-            print "current is not specific manage start/stop time."
-            instance_list = False
+            print "Didn't find the host instance matching tag."
+            return False
     return instance_list
 
 
 def start(self, instance_list):
     self.ec2.start_instances(InstanceIds=instance_list)
-    log.get_logger().log("hello, world")
+    # log.get_logger().log("hello, world")
 
 
 def stop(self, instance_list):
@@ -71,7 +78,7 @@ def main():
         #    ec2_instance.start(instance_list)
         # else:
         #    ec2_instance.stop(instance_list)
-    #else:
+    # else:
         # print "this time no instances need start or stop."
 
 if __name__ == "__main__":
