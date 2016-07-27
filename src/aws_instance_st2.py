@@ -2,8 +2,8 @@
 #
 
 import time
-import AwsConfig
-import AwsInstance
+from AwsConfig import AwsConfig
+from AwsInstance import AwsInstance
 # import log
 
 CONFIGFILE=".aws_instance_st2.conf"
