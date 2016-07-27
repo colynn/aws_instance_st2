@@ -56,14 +56,23 @@ def stop(self, instance_list):
 
 
 def main():
-    sys.argv[1:]
-    if instance_list:
-        if time_tag == aws_conf_dict['start_time']:
-            ec2_instance.start(instance_list)
-        else:
-            ec2_instance.stop(instance_list)
+    if len(sys.argv) > 1:
+        print "Usage: python " + sys.argv[0] +  " {start|stop}"
+    action = sys.argv[1]
+    if action == 'start':
+        instance_list = instance_manage_list('stop')
+    elif action == 'stop':
+        instance_list = instance_manage_list('start')
     else:
-        print "this time no instances need start or stop."
+        print "argument invalid, An bu zhi dao, you want to do what, lol."
+    if instance_list:
+        print instance_list
+        # if time_tag == aws_conf_dict['start_time']:
+        #    ec2_instance.start(instance_list)
+        # else:
+        #    ec2_instance.stop(instance_list)
+    #else:
+        # print "this time no instances need start or stop."
 
 if __name__ == "__main__":
     main()
