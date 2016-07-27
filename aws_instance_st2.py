@@ -3,10 +3,11 @@
 
 import sys
 import boto3
+# from lib import log
 
 region = 'cn-north-1'
 ec2 = boto3.client('ec2', region)
-tag_list = "ansible"
+tag_list = "ansible-test1, tina-bj-zabbix3.0-test"
 
 
 def instances_get():
@@ -34,13 +35,12 @@ def match_tag(instance_tag_name):
     return False
 
 
-def instance_manage_list(action):
+def instance_manage_list(instance_dict, action):
     """
     {'i-123456':{"tag": "srv-nc-test1", "status": "stopped"}}
 
     return
     """
-    instance_dict = instances_get()
     instance_list = []
     for iid in instance_dict:
         instance = instance_dict[iid]
@@ -49,40 +49,48 @@ def instance_manage_list(action):
                 instance_list.append(iid)
     if len(instance_list) == 0:
             print "Didn't find the host instance matching tag."
-            return False
+            sys.exit(1)
     return instance_list
 
 
-def start(self, instance_list):
-    self.ec2.start_instances(InstanceIds=instance_list)
+def start(instance_list):
+    respon_data = ec2.start_instances(InstanceIds=instance_list)
+    status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
+    return status_code
+    # waiter = ec2.get_waiter('instance_running')
+    # waiter.wait(InstanceIds=instance_list)
     # log.get_logger().log("hello, world")
 
+def stop(instance_list):
+    respon_data = ec2.stop_instances(InstanceIds=instance_list)
+    status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
+    return status_code
 
-def stop(self, instance_list):
-    self.ec2.stop_instances(InstanceIds=instance_list)
-
+def log(code, action, instance_list, instance_dict):
+    instance_tags = []
+    for i in instance_list:
+        instance_tags.append(instance_dict[i]['tag'])
+    if code == 200:
+        print "[Info] succeedd " + action + " " +','.join(instance_tags)
 
 def main():
     if len(sys.argv) != 2:
         print "Usage: python " + sys.argv[0] +  " {start|stop}"
-        sys.exit(1)
+        sys.exit(0)
     action = sys.argv[1]
+    instance_dict = instances_get()
+    # 
     if action == 'start':
-        instance_list = instance_manage_list('stopped')
+        instance_list = instance_manage_list(instance_dict, 'stopped')
+        code = start(instance_list)
     elif action == 'stop':
-        instance_list = instance_manage_list('running')
+        instance_list = instance_manage_list(instance_dict, 'running')
+        code = stop(instance_list)
     else:
-        print "argument invalid, An bu zhi dao, you want to do what, lol."
-    if instance_list:
-        print instance_list
-        # if time_tag == aws_conf_dict['start_time']:
-        #    ec2_instance.start(instance_list)
-        # else:
-        #    ec2_instance.stop(instance_list)
-    # else:
-        # print "this time no instances need start or stop."
+        print "[Error] argument invalid, An bu zhi dao, you want to do what, lol."
+        sys.exit(1)
+    log(code, action, instance_list, instance_dict)
 
 if __name__ == "__main__":
     main()
-
 
