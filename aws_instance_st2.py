@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
 
+import sys
 import boto3
 
 region = 'cn-north-1'
