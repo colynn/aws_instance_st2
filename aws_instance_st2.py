@@ -6,7 +6,7 @@ import boto3
 
 region = 'cn-north-1'
 ec2 = boto3.client('ec2', region)
-tag_list = "web-test, nc-test"
+tag_list = "ansible"
 
 
 def instances_get():
@@ -17,7 +17,7 @@ def instances_get():
     desc_instances = ec2.describe_instances()['Reservations']
     instances = {}
     for reservation in desc_instances:
-        instance_info = reservation[Instances][0]
+        instance_info = reservation['Instances'][0]
 
         for tag in instance_info['Tags']:
             # Note: If the tag of hosts is not unique, the item of instances dict will generate multiple times.
@@ -41,14 +41,13 @@ def instance_manage_list(action):
     return
     """
     instance_dict = instances_get()
-
     instance_list = []
     for iid in instance_dict:
         instance = instance_dict[iid]
         if match_tag(instance['tag']):
             if instance['status'] == action:
                 instance_list.append(iid)
-        else:
+    if len(instance_list) == 0:
             print "Didn't find the host instance matching tag."
             return False
     return instance_list
@@ -64,14 +63,14 @@ def stop(self, instance_list):
 
 
 def main():
-    if len(sys.argv) != 1:
+    if len(sys.argv) != 2:
         print "Usage: python " + sys.argv[0] +  " {start|stop}"
         sys.exit(1)
     action = sys.argv[1]
     if action == 'start':
-        instance_list = instance_manage_list('stop')
+        instance_list = instance_manage_list('stopped')
     elif action == 'stop':
-        instance_list = instance_manage_list('start')
+        instance_list = instance_manage_list('running')
     else:
         print "argument invalid, An bu zhi dao, you want to do what, lol."
     if instance_list:
