@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##
-# Description: depneds on tag_list start/stop instances.
+# Description: depends on tag_list start/stop instances.
 # author: colynn.liu
 #
 
