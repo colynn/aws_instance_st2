@@ -12,8 +12,8 @@ tag_list = "ansible-test1, tina-bj-zabbix3.0-test"
 
 def instances_get():
     """
-        will return dict type
-        {'i-123456':{"tag": "srv-nc-test1", "status": "stopped"}}
+    will return dict type
+    {'i-123456':{"tag": "srv-nc-test1", "status": "stopped"}}
     """
     desc_instances = ec2.describe_instances()['Reservations']
     instances = {}
@@ -29,6 +29,10 @@ def instances_get():
 
 
 def match_tag(instance_tag_name):
+    """
+    :param instance_tag_name: instance tag anme.
+    :return: instance tag whether included by tag_list True or False.
+    """
     for t in tag_list.split(','):
         if instance_tag_name.find(t.strip()) != -1:
             return True
@@ -37,9 +41,8 @@ def match_tag(instance_tag_name):
 
 def instance_manage_list(instance_dict, action):
     """
-    {'i-123456':{"tag": "srv-nc-test1", "status": "stopped"}}
-
-    return
+    :return need start or stop instance list.
+    :return ['i-123456', 'i-4563dba']
     """
     instance_list = []
     for iid in instance_dict:
@@ -61,17 +64,22 @@ def start(instance_list):
     # waiter.wait(InstanceIds=instance_list)
     # log.get_logger().log("hello, world")
 
+
 def stop(instance_list):
     respon_data = ec2.stop_instances(InstanceIds=instance_list)
     status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
     return status_code
+
 
 def log(code, action, instance_list, instance_dict):
     instance_tags = []
     for i in instance_list:
         instance_tags.append(instance_dict[i]['tag'])
     if code == 200:
-        print "[Info] succeedd " + action + " " +','.join(instance_tags)
+        print "[Info] succeed " + action + " " + ','.join(instance_tags)
+    else:
+        print "[Error] failed " + action + " " + ','.join(instance_tags)
+
 
 def main():
     if len(sys.argv) != 2:
