@@ -64,8 +64,9 @@ def stop(self, instance_list):
 
 
 def main():
-    if len(sys.argv) > 1:
+    if len(sys.argv) != 1:
         print "Usage: python " + sys.argv[0] +  " {start|stop}"
+        sys.exit(1)
     action = sys.argv[1]
     if action == 'start':
         instance_list = instance_manage_list('stop')
