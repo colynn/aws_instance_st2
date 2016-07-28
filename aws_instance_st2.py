@@ -72,7 +72,7 @@ def stop(instance_list):
     status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
     return status_code
 
-def terminate(instance_list)
+def terminate(instance_list):
     respon_data = ec2.terminate_instances(InstanceIds=instance_list)
     status_code = respon_data['ResponseMetadata']['HTTPStatusCode']
     return status_code
