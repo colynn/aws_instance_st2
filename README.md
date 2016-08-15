@@ -1,5 +1,5 @@
 ##
-Depends on the tag list to start/stop aws instances
+Depends on the tag list to start/stop aws instances, you can change the definition of tag_list in the script.
 
 <pre>
 # pip install boto3
