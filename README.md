@@ -1,5 +1,5 @@
 ##
-Depends on the crontab time to start/stop aws instances
+Depends on the tag list to start/stop aws instances
 
 <pre>
 # pip install boto3
